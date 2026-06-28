@@ -1,0 +1,62 @@
+"use client";
+
+import { createContext, useContext, useMemo, useState } from "react";
+import { ALL_PRODUCTS } from "../lib/data";
+
+const CartContext = createContext(null);
+
+export function CartProvider({ children }) {
+  const [cart, setCart] = useState({});
+  const [cartOpen, setCartOpen] = useState(false);
+  const [checkoutOpen, setCheckoutOpen] = useState(false);
+  const [orderPlaced, setOrderPlaced] = useState(false);
+
+  function addToCart(id) {
+    setCart((c) => ({ ...c, [id]: (c[id] || 0) + 1 }));
+    setCartOpen(true);
+  }
+
+  function changeQty(id, delta) {
+    setCart((c) => {
+      const next = Math.max(0, (c[id] || 0) + delta);
+      return { ...c, [id]: next };
+    });
+  }
+
+  function clearCart() {
+    setCart({});
+  }
+
+  const cartItems = useMemo(() => {
+    return Object.entries(cart)
+      .filter(([, qty]) => qty > 0)
+      .map(([id, qty]) => ({ ...ALL_PRODUCTS.find((p) => p.id === id), qty }))
+      .filter((item) => item.id);
+  }, [cart]);
+
+  const itemCount = cartItems.reduce((sum, i) => sum + i.qty, 0);
+  const subtotal = cartItems.reduce((sum, i) => sum + i.qty * i.price, 0);
+
+  const value = {
+    cartItems,
+    itemCount,
+    subtotal,
+    addToCart,
+    changeQty,
+    clearCart,
+    cartOpen,
+    setCartOpen,
+    checkoutOpen,
+    setCheckoutOpen,
+    orderPlaced,
+    setOrderPlaced,
+  };
+
+  return <CartContext.Provider value={value}>{children}</CartContext.Provider>;
+}
+
+export function useCart() {
+  const ctx = useContext(CartContext);
+  if (!ctx) throw new Error("useCart must be used within CartProvider");
+  return ctx;
+}

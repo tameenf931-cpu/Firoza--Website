@@ -1,9 +1,12 @@
 "use client";
 
-import { Heart } from "lucide-react";
+import { Heart, Plus } from "lucide-react";
 import { formatPKR } from "../lib/data";
+import { useCart } from "../context/CartContext";
 
 export function ProductCard({ product }) {
+  const { addToCart } = useCart();
+
   return (
     <div className="group">
       <div className="relative overflow-hidden bg-beige mb-4 aspect-[3/4]">
@@ -18,15 +21,24 @@ export function ProductCard({ product }) {
         >
           <Heart size={15} />
         </button>
-        <div className="absolute bottom-0 left-0 right-0 translate-y-full group-hover:translate-y-0 transition-transform duration-300 bg-ink/85 text-white text-center text-xs uppercase tracking-widest py-3">
-          View Details
-        </div>
+        <button
+          onClick={() => addToCart(product.id)}
+          className="absolute bottom-0 left-0 right-0 translate-y-full group-hover:translate-y-0 transition-transform duration-300 bg-ink/85 hover:bg-ink text-white text-center text-xs uppercase tracking-widest py-3 flex items-center justify-center gap-2"
+        >
+          <Plus size={13} /> Add to Bag
+        </button>
       </div>
       {product.category && (
         <p className="text-[11px] uppercase tracking-widest text-firoza-deep mb-1">{product.category}</p>
       )}
       <h3 className="font-display text-lg leading-tight mb-1">{product.name}</h3>
-      <p className="text-sm text-ink/70">{formatPKR(product.price)}</p>
+      <p className="text-sm text-ink/70 mb-2">{formatPKR(product.price)}</p>
+      <button
+        onClick={() => addToCart(product.id)}
+        className="md:hidden text-xs px-3 py-1.5 rounded-sm text-white bg-ink"
+      >
+        Add to Bag
+      </button>
     </div>
   );
 }

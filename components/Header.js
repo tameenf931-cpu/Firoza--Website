@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { Search, Heart, ShoppingBag, Menu, X } from "lucide-react";
+import { useCart } from "../context/CartContext";
 
 const NAV = [
   { label: "Home", href: "#" },
@@ -20,6 +21,7 @@ const NAV = [
 export default function Header() {
   const [scrolled, setScrolled] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
+  const { itemCount, setCartOpen } = useCart();
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 40);
@@ -57,13 +59,17 @@ export default function Header() {
           <button aria-label="Wishlist" className="hidden md:inline-flex">
             <Heart size={19} />
           </button>
-          <button aria-label="Bag" className="inline-flex">
+          <button onClick={() => setCartOpen(true)} className="relative inline-flex" aria-label="Bag">
             <ShoppingBag size={19} />
+            {itemCount > 0 && (
+              <span className="absolute -top-2 -right-2 w-4 h-4 rounded-full bg-firoza-deep text-white text-[10px] flex items-center justify-center">
+                {itemCount}
+              </span>
+            )}
           </button>
         </div>
       </div>
 
-      {/* Mobile menu */}
       {menuOpen && (
         <div className="fixed inset-0 bg-ivory z-50 flex flex-col px-6 py-6 lg:hidden">
           <div className="flex items-center justify-between mb-10">
